@@ -1,0 +1,111 @@
+from random import randrange
+
+board = [[[1], [2], [3]], [[4], [5], [6]], [[7], [8], [9]]]
+
+
+def display_board(board):
+    a, b, c, d, e, f, g, h, i = make_list_of_free_fields(board)
+    print(f"""
+    +-------+-------+-------+
+    |       |       |       |
+    |   {a}   |   {b}   |   {c}   |
+    |       |       |       |
+    +-------+-------+-------+
+    |       |       |       |
+    |   {d}   |   {e}   |   {f}   |
+    |       |       |       |
+    +-------+-------+-------+
+    |       |       |       |
+    |   {g}   |   {h}   |   {i}   |
+    |       |       |       |
+    +-------+-------+-------+
+    """, end="")
+
+
+def enter_move(board):
+    move = int(input("Enter your move: "))
+    for i, p, x in board:
+        change = "O"
+        if move == i[0]:
+            i[0] = change
+        elif move == p[0]:
+            p[0] = change
+        elif move == x[0]:
+            x[0] = change
+
+
+def make_list_of_free_fields(board):
+    tup = tuple()
+    for i, p, x in board:
+        tup += i[0], p[0], x[0]
+    return tup
+
+
+def victory_for(board):
+    a, b, c, d, e, f, g, h, i = make_list_of_free_fields(board)
+    pc_sign = "X"
+    user_sign = "O"
+    if a == b == c == pc_sign or d == e == f == pc_sign or g == h == i == pc_sign:
+        return "PC won!"
+    elif a == d == g == pc_sign or b == e == h == pc_sign or c == f == i == pc_sign:
+        return "PC won!"
+    elif a == e == i == pc_sign or c == e == g == pc_sign:
+        return "PC won!"
+    elif a == b == c == user_sign or d == e == f == user_sign or g == h == i == user_sign:
+        return "You won!"
+    elif a == d == g == user_sign or b == e == h == user_sign or c == f == i == user_sign:
+        return "You won!"
+    elif a == e == i == user_sign or c == e == g == user_sign:
+        return "You won!"
+
+
+def draw_move(board):
+    if board[1][1][0] != "X":  # pc's first move
+        board[1][1][0] = "X"
+    else:
+        status = True
+        while status:
+            move = randrange(10)
+            for i, p, x in board:
+                change = "X"
+                if move == i[0]:
+                    i[0] = change
+                    status = False
+                    break
+                elif move == p[0]:
+                    p[0] = change
+                    status = False
+                    break
+                elif move == x[0]:
+                    x[0] = change
+                    status = False
+                    break
+                else:
+                    status = True
+
+
+counter = 0
+
+while True:
+    if counter == 0:
+        print("    ********New game!********", end="")
+    draw_move(board)
+    counter += 1
+    display_board(board)
+    if victory_for(board) == "PC won!":
+        print("{:^25}".format(victory_for(board)))
+        break
+    if counter == 9:
+        print("There is no more moves!")
+        break
+    enter_move(board)
+    counter += 1
+    display_board(board)
+    if victory_for(board) == "You won!":
+        print("{:^26}".format(victory_for(board)))
+        break
+    if counter == 9:
+        print("There is no more moves!")
+        break
+
+print("{:^35}".format("Nice game!"), end="")
