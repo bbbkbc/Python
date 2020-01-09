@@ -1,0 +1,42 @@
+# code below allow you to enter a msg and shift value
+# then your msg will be encoded
+# if your msg contain any numbers or spaces they will stay unchanged
+# program encode only latin letters by using shift value inputed by you
+
+text = input("Enter a msg which you want to encode: ")
+try:
+    shift = int(input("Enter a shift value which you want to use: "))
+    assert 1 <= shift <= 25
+except ValueError:
+    print("Only numbers in range 1 to 25 inclusive you can use")
+    exit()
+except AssertionError:
+    print("You try to input number which is greater than 25 or smaller than 1")
+    exit()
+
+cipher = ""
+for i in text:
+    if i == " ":
+        cipher = cipher + i
+    elif 65 <= ord(i) <= 90:
+        move = ord(i) + shift
+        if move > 90:
+            letter = chr(64 + (move - 90))
+        else:
+            letter = chr(ord(i) + shift)
+        cipher += letter
+    elif 97 <= ord(i) <= 122:
+        move = ord(i) + shift
+        if move > 122:
+            letter = chr(96 + (move - 122))
+        else:
+            letter = chr(ord(i) + shift)
+        cipher += letter
+    else:
+        try:
+            el = int(i)
+            cipher = cipher + i
+        except ValueError:
+            continue
+
+print("Encoded msg is: ", cipher)
