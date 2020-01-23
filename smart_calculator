@@ -1,0 +1,129 @@
+# function take an inputted data and execute them by returning result
+def solution(inp_data):
+    equation = "".join(inp_data)
+    sm = 0
+    try:
+        for element in inp_data:
+            num = int(element)
+            sm = sm + num
+        assert sm == eval(equation)
+    except AssertionError:
+        return print("Invalid expression")
+    except ValueError:
+        pass
+    try:
+        result = eval(equation)
+        if result == int(result):
+            result = int(result)
+        print(result)
+    except (SyntaxError, NameError, AssertionError, ValueError, ZeroDivisionError):
+        return print("Invalid expression")
+
+
+# function below take variable and add them to the dictionary, also function can return value of variable
+def variable_assignment(dpm):
+    global variable_dict
+    prompt_temp = "".join(dpm)
+    try:
+        for element in prompt_temp:
+            assert (ord(element) in range(65, 91) or ord(element) in range(97, 123)) \
+                   or (ord(element) == 61 or ord(element) in range(48, 58))
+    except AssertionError:
+        return print("Only latin letters are allowed")
+    try:
+        assert prompt_temp.count("=") <= 1
+        prompt_temp = prompt_temp.split(sep="=")
+        if not prompt_temp[0].isalpha():
+            return print("Invalid identifier")
+        if len(prompt_temp) == 1:
+            try:
+                return print(variable_dict[prompt_temp[0]])
+            except KeyError:
+                return print("Unknown variable")
+        if prompt_temp[1] in variable_dict.keys():
+            variable_dict[prompt_temp[0]] = variable_dict[prompt_temp[1]]
+        elif (prompt_temp[1] not in variable_dict.keys()) and prompt_temp[1].isalpha():
+            return print("Unknown variable")
+        else:
+            variable_dict[prompt_temp[0]] = int(prompt_temp[1])
+    except (AssertionError, ValueError):
+        return print("Invalid assignment")
+    return variable_dict
+
+
+# function is used only if inputted data start with "/"
+def command(inp_com):
+    try:
+        if inp_com[0] == "/help":
+            print("This is very simple calculator")
+            return 1
+        elif inp_com[0] == "/exit":
+            print("Bye!")
+            return 0
+        else:
+            print("Unknown command")
+            return 1
+    except IndexError:
+        return 1
+
+
+# function take an input and convert to equation base on assignments stored in variable_dict
+def assignment_converter(statement):
+    global variable_dict
+    local_output = []
+    statement = "".join(statement)
+    if len(statement) == 1:
+        ren_len = len(statement[0])
+        statement = statement[0]
+    else:
+        ren_len = len(statement)
+    for index in range(ren_len):
+        if statement[index] in variable_dict.keys():
+            local_output.insert(index, str(variable_dict[statement[index]]))
+        else:
+            local_output.insert(index, statement[index])
+    return local_output
+
+
+# function check inputted prompt, and returns specific numbers which conduct to proper function
+def check(data):
+    global variable_dict
+    temp_data = "".join(data)
+    if "=" in temp_data:
+        return 4  # value 4 conduct to variable_assignment function
+    elif temp_data.startswith("/"):
+        return 0  # value 0 conduct to command function
+    elif len(data) == 0:
+        return 3  # value 3 let program to skip data, and start again
+    elif temp_data.isalpha():
+        return 4  # value 4 conduct to variable_assignment function
+    else:
+        try:
+            eval(temp_data)
+            return 7  # value 7 conduct us to solution function which produce result based on prompted value
+        except NameError:
+            return 5  # value 5 help tu convert prompt data info expression by using assignment_converter
+            # and returned value is executed by solution function
+        except (ZeroDivisionError, SyntaxError):
+            return 7  # value 7 conduct us to solution function which produce result based on prompted value
+
+
+variable_dict = dict()
+while True:
+    prompt = input().split()
+    if check(prompt) == 3:
+        continue
+    elif check(prompt) == 0:
+        if command(prompt) == 0:
+            break
+        else:
+            continue
+    elif check(prompt) == 4:
+        variable_assignment(prompt)
+        continue
+    elif check(prompt) == 5:
+        solution(assignment_converter(prompt))
+        continue
+    elif check(prompt) == 7:
+        solution(prompt)
+        continue
